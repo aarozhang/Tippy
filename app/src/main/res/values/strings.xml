@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">Tippy</string>
+    <string name="bill_amount">Bill Amount</string>
+    <string name="tip_percent">Tip Percent</string>
+    <string name="total_amount">Total: %s</string>
 </resources>
