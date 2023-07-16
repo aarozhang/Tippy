@@ -3,6 +3,8 @@ package com.azhang.tippy
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,6 +23,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -64,16 +68,19 @@ fun TippyApp() {
         modifier = Modifier
             .fillMaxSize()
             .padding(32.dp),
+//            .background(Color(0xff2bb4f8)),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text(
-            text = stringResource(R.string.app_name),
-            style = MaterialTheme.typography.displayLarge,
-            modifier = Modifier
-                .padding(bottom = 64.dp),
-            fontFamily = FontFamily(Font(R.font.noto_sans))
-        )
+        Image(painter = painterResource(R.drawable.tippy), contentDescription = null)
+
+//        Text(
+//            text = stringResource(R.string.app_name),
+//            style = MaterialTheme.typography.displayLarge,
+//            modifier = Modifier
+//                .padding(bottom = 64.dp),
+//            fontFamily = FontFamily(Font(R.font.noto_sans))
+//        )
 
         EditNumberField(
             value = amountInput,
@@ -97,7 +104,7 @@ fun TippyApp() {
             text = stringResource(R.string.total_amount, total),
             style = MaterialTheme.typography.displaySmall,
             modifier = Modifier.align(Alignment.Start),
-            fontFamily = FontFamily(Font(R.font.noto_sans))
+            fontFamily = FontFamily(Font(R.font.nunito))
         )
 
     }
@@ -119,7 +126,7 @@ fun EditNumberField(
         label = {
             Text(
                 label,
-                fontFamily = FontFamily(Font(R.font.noto_sans))
+                fontFamily = FontFamily(Font(R.font.nunito))
             )
         },
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
