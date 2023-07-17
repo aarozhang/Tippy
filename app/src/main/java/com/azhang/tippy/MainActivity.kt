@@ -7,6 +7,7 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -23,6 +24,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
@@ -73,20 +76,16 @@ fun TippyApp() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(32.dp),
-//            .background(Color(0xff2bb4f8)),
+            .padding(52.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Image(painter = painterResource(R.drawable.tippy), contentDescription = null)
+        Image(
+            painter = painterResource(R.drawable.tippyblack),
+            contentDescription = null,
 
-//        Text(
-//            text = stringResource(R.string.app_name),
-//            style = MaterialTheme.typography.displayLarge,
-//            modifier = Modifier
-//                .padding(bottom = 64.dp),
-//            fontFamily = FontFamily(Font(R.font.noto_sans))
-//        )
+            modifier = Modifier.padding(top = 32.dp)
+        )
 
         EditNumberField(
             value = amountInput,
@@ -112,6 +111,8 @@ fun TippyApp() {
             modifier = Modifier.align(Alignment.Start),
             fontFamily = FontFamily(Font(R.font.nunito))
         )
+
+        Spacer(modifier = Modifier.padding(32.dp))
 
     }
 }
