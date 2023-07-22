@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -29,8 +30,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.azhang.tippy.models.SplashViewModel
 import com.azhang.tippy.ui.theme.TippyTheme
@@ -67,14 +70,17 @@ fun TippyApp() {
         mutableStateOf("")
     }
 
+    val maxCharsForBillAmount = 7
+    val maxCharsForTipPercent = 5
     val amount = amountInput.toDoubleOrNull() ?: 0.0
     val tipPercent = tipPercentInput.toDoubleOrNull() ?: 0.0
     val total = calculateTotal(amount, tipPercent)
+    val tipValue = calculateTip(amount, tipPercent)
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(52.dp),
+            .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -86,30 +92,47 @@ fun TippyApp() {
 
         EditNumberField(
             value = amountInput,
-            onValueChanged = { amountInput = it },
+            onValueChanged = {
+                if (it.length <= maxCharsForBillAmount) {
+                    amountInput = it
+                }
+            },
             modifier = Modifier
-                .padding(bottom = 32.dp)
+                .padding(bottom = 32.dp, start = 28.dp, end = 28.dp)
                 .fillMaxWidth(),
             label = stringResource(id = R.string.bill_amount)
         )
 
         EditNumberField(
             value = tipPercentInput,
-            onValueChanged = { tipPercentInput = it },
+            onValueChanged = {
+                if (it.length <= maxCharsForTipPercent) {
+                    tipPercentInput = it
+                }
+            },
             modifier = Modifier
-                .padding(bottom = 32.dp)
+                .padding(bottom = 32.dp, start = 28.dp, end = 28.dp)
                 .fillMaxWidth(),
             label = stringResource(id = R.string.tip_percent)
         )
 
-        Text(
-            text = stringResource(R.string.total_amount, total),
-            style = MaterialTheme.typography.displaySmall,
-            modifier = Modifier.align(Alignment.Start),
-            fontFamily = FontFamily(Font(R.font.nunito))
+        calculatedValueText(
+            R.string.tip_value,
+            tipValue,
+            Modifier
+                .align(Alignment.Start)
+                .padding(start = 28.dp)
         )
 
-        Spacer(modifier = Modifier.padding(32.dp))
+        calculatedValueText(
+            R.string.total_amount,
+            total,
+            Modifier
+                .align(Alignment.Start)
+                .padding(start = 28.dp)
+        )
+
+        Spacer(modifier = Modifier.padding(36.dp))
 
     }
 }
@@ -133,17 +156,43 @@ fun EditNumberField(
                 fontFamily = FontFamily(Font(R.font.nunito))
             )
         },
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+        shape = RoundedCornerShape(16.dp)
+    )
+}
+
+@Composable
+fun calculatedValueText(
+    stringId: Int,
+    value: String,
+    modifier: Modifier
+) {
+    Text(
+        text = stringResource(stringId, value),
+        fontSize = 28.sp,
+        modifier = modifier,
+        fontFamily = FontFamily(Font(R.font.nunito)),
+        softWrap = false,
+        overflow = TextOverflow.Ellipsis
     )
 }
 
 /**
- * Calculates the bill total based on bill amount and decided tip percent.
+ * Calculates the bill total.
  * Accounts for local currency.
  */
 private fun calculateTotal(billAmount: Double, tipPercent: Double = 15.0): String {
     val total = tipPercent / 100 * billAmount + billAmount
     return NumberFormat.getCurrencyInstance().format(total)
+}
+
+/**
+ * Calculates the tip based on bill amount and tip percent.
+ * Accounts for local currency.
+ */
+private fun calculateTip(billAmount: Double, tipPercent: Double = 15.0): String {
+    val tip = tipPercent / 100 * billAmount
+    return NumberFormat.getCurrencyInstance().format(tip)
 }
 
 @Preview(showBackground = true)
