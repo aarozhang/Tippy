@@ -7,12 +7,17 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,6 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
@@ -30,11 +36,11 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.azhang.tippy.models.SplashViewModel
 import com.azhang.tippy.ui.theme.TippyTheme
 import java.text.NumberFormat
+import kotlin.math.roundToInt
 
 class MainActivity : ComponentActivity() {
     private val viewModel: SplashViewModel by viewModels()
@@ -57,6 +63,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TippyApp() {
     // stores unformatted user input values
@@ -64,7 +71,7 @@ fun TippyApp() {
         mutableStateOf("")
     }
     var tipPercentInput by remember {
-        mutableStateOf("")
+        mutableStateOf(15F)
     }
     var billSplitInput by remember {
         mutableStateOf("")
@@ -76,7 +83,7 @@ fun TippyApp() {
 
     // stores formatted user input values
     val amount = amountInput.toDoubleOrNull() ?: 0.0
-    val tipPercent = tipPercentInput.toDoubleOrNull() ?: 0.0
+    val tipPercent = tipPercentInput.roundToInt()
     val numberOfPeople = billSplitInput.toDoubleOrNull() ?: 1.0
 
     // stores calculated values
@@ -105,21 +112,45 @@ fun TippyApp() {
                 }
             },
             modifier = Modifier
-                .padding(bottom = 12.dp, start = 28.dp, end = 28.dp),
+                .padding(bottom = 28.dp, start = 28.dp, end = 28.dp),
             label = stringResource(id = R.string.bill_amount)
         )
 
-        EditNumberField(
-            value = tipPercentInput,
-            onValueChanged = {
-                if (it.length <= maxCharsForTipPercent) {
-                    tipPercentInput = it
-                }
-            },
-            modifier = Modifier
-                .padding(bottom = 12.dp, start = 28.dp, end = 28.dp),
-            label = stringResource(id = R.string.tip_percent)
+        // Start tip input UI
+        Row(modifier = Modifier.padding(start = 28.dp, end = 28.dp)) {
+            Text(
+                text = "Tip: $tipPercent% | $tipValue",
+                modifier = Modifier
+//                    .weight(1f)
+            )
+        }
+
+
+        Slider(value = tipPercentInput,
+            onValueChange = { tipPercentInput = it },
+            valueRange = 15f..30f,
+            modifier = Modifier.padding(bottom = 12.dp, start = 28.dp, end = 28.dp),
+            steps = 4,
+            thumb = {
+                Icon(
+                    imageVector = Icons.Filled.Favorite,
+                    contentDescription = null,
+                    tint = colorResource(id = R.color.tippyBlue)
+                )
+            }
         )
+
+//        EditNumberField(
+//            value = tipPercentInput,
+//            onValueChanged = {
+//                if (it.length <= maxCharsForTipPercent) {
+//                    tipPercentInput = it
+//                }
+//            },
+//            modifier = Modifier
+//                .padding(bottom = 12.dp, start = 28.dp, end = 28.dp),
+//            label = stringResource(id = R.string.tip_percent)
+//        )
 
         EditNumberField(
             value = billSplitInput,
@@ -133,13 +164,13 @@ fun TippyApp() {
             label = stringResource(id = R.string.split_bill)
         )
 
-        CalculatedValueText(
-            R.string.tip_value,
-            tipValue,
-            Modifier
-                .align(Alignment.Start)
-                .padding(start = 28.dp)
-        )
+//        CalculatedValueText(
+//            R.string.tip_value,
+//            tipValue,
+//            Modifier
+//                .align(Alignment.Start)
+//                .padding(start = 28.dp)
+//        )
 
         CalculatedValueText(
             R.string.total_amount,
@@ -209,9 +240,9 @@ fun CalculatedValueText(
 ) {
     Text(
         text = stringResource(stringId, value),
-        fontSize = 28.sp,
+        //fontSize = 28.sp,
         modifier = modifier,
-        fontFamily = FontFamily(Font(R.font.nunito)),
+        //fontFamily = FontFamily(Font(R.font.nunito)),
         softWrap = false,
         overflow = TextOverflow.Ellipsis
     )
@@ -221,8 +252,8 @@ fun CalculatedValueText(
  * Calculates the tip value.
  * Accounts for local currency.
  */
-private fun calculateTip(billAmount: Double, tipPercent: Double = 15.0): String {
-    val tip = tipPercent / 100 * billAmount
+private fun calculateTip(billAmount: Double, tipPercent: Int = 15): String {
+    val tip = tipPercent.toDouble() / 100 * billAmount
     return NumberFormat.getCurrencyInstance().format(tip)
 }
 
@@ -230,17 +261,17 @@ private fun calculateTip(billAmount: Double, tipPercent: Double = 15.0): String 
  * Calculates the bill total.
  * Accounts for local currency.
  */
-private fun calculateTotal(billAmount: Double, tipPercent: Double = 15.0): String {
-    val total = tipPercent / 100 * billAmount + billAmount
+private fun calculateTotal(billAmount: Double, tipPercent: Int = 15): String {
+    val total = tipPercent.toDouble() / 100 * billAmount + billAmount
     return NumberFormat.getCurrencyInstance().format(total)
 }
 
 private fun calculateBillSplit(
     billAmount: Double,
-    tipPercent: Double = 15.0,
+    tipPercent: Int = 15,
     numberOfPeople: Double = 1.0
 ): String {
-    val costPerPerson = (tipPercent / 100 * billAmount + billAmount) / numberOfPeople
+    val costPerPerson = (tipPercent.toDouble() / 100 * billAmount + billAmount) / numberOfPeople
     return NumberFormat.getCurrencyInstance().format(costPerPerson)
 }
 
