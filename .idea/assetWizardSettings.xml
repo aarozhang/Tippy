@@ -23,7 +23,7 @@
                                 <PersistentState>
                                   <option name="values">
                                     <map>
-                                      <entry key="url" value="jar:file:/C:/Users/aarzh/AppData/Local/JetBrains/Toolbox/apps/AndroidStudio/ch-0/222.4459.24.2221.10121639/plugins/android/lib/android.jar!/images/material/icons/materialicons/person_add/baseline_person_add_24.xml" />
+                                      <entry key="url" value="file:/$USER_HOME$/AppData/Local/Android/Sdk/icons/material/materialicons/remove/baseline_remove_24.xml" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -33,7 +33,7 @@
                         </option>
                         <option name="values">
                           <map>
-                            <entry key="outputName" value="baseline_person_add_24" />
+                            <entry key="outputName" value="baseline_remove_24" />
                             <entry key="sourceFile" value="C:\Users\aarzh\Downloads\app-icon.svg" />
                           </map>
                         </option>

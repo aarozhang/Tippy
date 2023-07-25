@@ -7,12 +7,18 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -33,9 +39,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.azhang.tippy.models.SplashViewModel
 import com.azhang.tippy.ui.theme.TippyTheme
@@ -74,17 +82,16 @@ fun TippyApp() {
         mutableStateOf(15F)
     }
     var billSplitInput by remember {
-        mutableStateOf("")
+        mutableStateOf(1)
     }
 
     // Char limits for text inputs
     val maxCharsForBillAmount = 7
-    val maxCharsForTipPercent = 5
 
     // stores formatted user input values
     val amount = amountInput.toDoubleOrNull() ?: 0.0
     val tipPercent = tipPercentInput.roundToInt()
-    val numberOfPeople = billSplitInput.toDoubleOrNull() ?: 1.0
+    val numberOfPeople = billSplitInput.toDouble()
 
     // stores calculated values
     val total = calculateTotal(amount, tipPercent)
@@ -117,19 +124,15 @@ fun TippyApp() {
         )
 
         // Start tip input UI
-        Row(modifier = Modifier.padding(start = 28.dp, end = 28.dp)) {
-            Text(
-                text = "Tip: $tipPercent% | $tipValue",
-                modifier = Modifier
-//                    .weight(1f)
-            )
-        }
-
+        Text(
+            text = "Tip: $tipPercent% | $tipValue",
+            modifier = Modifier
+        )
 
         Slider(value = tipPercentInput,
             onValueChange = { tipPercentInput = it },
             valueRange = 15f..30f,
-            modifier = Modifier.padding(bottom = 12.dp, start = 28.dp, end = 28.dp),
+            modifier = Modifier.padding(bottom = 28.dp, start = 28.dp, end = 28.dp),
             steps = 4,
             thumb = {
                 Icon(
@@ -140,70 +143,98 @@ fun TippyApp() {
             }
         )
 
+        // Start bill split UI
+        Text(
+            text = stringResource(id = R.string.split_bill),
+            modifier = Modifier
+        )
+        Row(modifier = Modifier.padding(start = 28.dp, end = 28.dp, bottom = 28.dp)) {
+            ElevatedButton(
+                onClick = {
+                    if (billSplitInput > 1) billSplitInput -= 1
+                },
+                contentPadding = PaddingValues(
+                    start = 12.dp,
+                    top = 12.dp,
+                    end = 12.dp,
+                    bottom = 12.dp
+                ),
+                modifier = Modifier.weight(1f)
+            ) {
+                Icon(
+                    painterResource(id = R.drawable.baseline_remove_24),
+                    contentDescription = "Remove",
+                    modifier = Modifier.size(ButtonDefaults.IconSize),
+                    tint = colorResource(id = R.color.tippyBlue)
+                )
+            }
+
+            Text(
+                "$billSplitInput",
+                modifier = Modifier.weight(1f),
+                textAlign = TextAlign.Center,
+                fontSize = 28.sp
+            )
+
+            ElevatedButton(
+                onClick = { billSplitInput += 1 },
+                // Uses ButtonDefaults.ContentPadding by default
+                contentPadding = PaddingValues(
+                    start = 12.dp,
+                    top = 12.dp,
+                    end = 12.dp,
+                    bottom = 12.dp
+                ),
+                modifier = Modifier.weight(1f),
+            ) {
+                Icon(
+                    Icons.Filled.Add,
+                    contentDescription = "Add",
+                    modifier = Modifier.size(ButtonDefaults.IconSize),
+                    tint = colorResource(id = R.color.tippyBlue)
+                )
+            }
+        }
+
 //        EditNumberField(
-//            value = tipPercentInput,
+//            value = billSplitInput,
 //            onValueChanged = {
 //                if (it.length <= maxCharsForTipPercent) {
-//                    tipPercentInput = it
+//                    billSplitInput = it
 //                }
 //            },
 //            modifier = Modifier
 //                .padding(bottom = 12.dp, start = 28.dp, end = 28.dp),
-//            label = stringResource(id = R.string.tip_percent)
+//            label = stringResource(id = R.string.split_bill)
 //        )
 
-        EditNumberField(
-            value = billSplitInput,
-            onValueChanged = {
-                if (it.length <= maxCharsForTipPercent) {
-                    billSplitInput = it
-                }
-            },
-            modifier = Modifier
-                .padding(bottom = 12.dp, start = 28.dp, end = 28.dp),
-            label = stringResource(id = R.string.split_bill)
+        Text(
+            text = "$total",
+            fontSize = 28.sp,
+            softWrap = false,
+            overflow = TextOverflow.Ellipsis,
+            textAlign = TextAlign.Center
         )
 
 //        CalculatedValueText(
-//            R.string.tip_value,
-//            tipValue,
+//            R.string.total_amount,
+//            total,
 //            Modifier
-//                .align(Alignment.Start)
+//
 //                .padding(start = 28.dp)
 //        )
 
-        CalculatedValueText(
-            R.string.total_amount,
-            total,
-            Modifier
-                .align(Alignment.Start)
-                .padding(start = 28.dp)
+        if (billSplitInput > 1) {
+            CalculatedValueText(
+                R.string.cost_per_person,
+                costPerPerson,
+                Modifier
+            )
+        }
+
+        Spacer(
+            modifier = Modifier.padding(28.dp),
         )
-
-        CalculatedValueText(
-            R.string.cost_per_person,
-            costPerPerson,
-            Modifier
-                .align(Alignment.Start)
-                .padding(start = 28.dp)
-        )
-
-//        Spacer(
-//            modifier = Modifier.padding(24.dp),
-//        )
-
-//        Button(
-//            onClick = { /*TODO*/ },
-//            contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
-//            modifier = Modifier.align(Alignment.End)
-//        ) {
-//            Icon(
-//                painterResource(id = R.drawable.baseline_person_add_24),
-//                ""
-//            )
-//            Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
-//            Text("Split Bill")
-//        }
 
     }
 }
@@ -240,11 +271,12 @@ fun CalculatedValueText(
 ) {
     Text(
         text = stringResource(stringId, value),
-        //fontSize = 28.sp,
+        fontSize = 28.sp,
         modifier = modifier,
         //fontFamily = FontFamily(Font(R.font.nunito)),
         softWrap = false,
-        overflow = TextOverflow.Ellipsis
+        overflow = TextOverflow.Ellipsis,
+        textAlign = TextAlign.Center
     )
 }
 
@@ -266,6 +298,10 @@ private fun calculateTotal(billAmount: Double, tipPercent: Int = 15): String {
     return NumberFormat.getCurrencyInstance().format(total)
 }
 
+/**
+ * Splits the bill.
+ * Accounts for local currency.
+ */
 private fun calculateBillSplit(
     billAmount: Double,
     tipPercent: Int = 15,
