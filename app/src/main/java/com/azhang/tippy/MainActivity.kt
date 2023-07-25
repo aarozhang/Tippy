@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -208,12 +207,9 @@ fun TippyApp() {
 //            label = stringResource(id = R.string.split_bill)
 //        )
 
-        Text(
-            text = "$total",
-            fontSize = 28.sp,
-            softWrap = false,
-            overflow = TextOverflow.Ellipsis,
-            textAlign = TextAlign.Center
+        CalculatedValueText(
+            R.string.total_amount,
+            total
         )
 
 //        CalculatedValueText(
@@ -227,14 +223,13 @@ fun TippyApp() {
         if (billSplitInput > 1) {
             CalculatedValueText(
                 R.string.cost_per_person,
-                costPerPerson,
-                Modifier
+                costPerPerson
             )
         }
 
-        Spacer(
-            modifier = Modifier.padding(28.dp),
-        )
+//        Spacer(
+//            modifier = Modifier.padding(28.dp),
+//        )
 
     }
 }
@@ -255,7 +250,8 @@ fun EditNumberField(
         label = {
             Text(
                 label,
-                fontFamily = FontFamily(Font(R.font.nunito))
+                textAlign = TextAlign.Center,
+//                fontFamily = FontFamily(Font(R.font.roboto_black)),
             )
         },
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -266,14 +262,12 @@ fun EditNumberField(
 @Composable
 fun CalculatedValueText(
     stringId: Int,
-    value: String,
-    modifier: Modifier
+    value: String
 ) {
     Text(
         text = stringResource(stringId, value),
         fontSize = 28.sp,
-        modifier = modifier,
-        //fontFamily = FontFamily(Font(R.font.nunito)),
+        fontFamily = FontFamily(Font(R.font.roboto_black)),
         softWrap = false,
         overflow = TextOverflow.Ellipsis,
         textAlign = TextAlign.Center
