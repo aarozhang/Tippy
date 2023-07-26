@@ -5,13 +5,16 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -32,6 +35,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -101,116 +105,166 @@ fun TippyApp() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(24.dp),
+            .background(colorResource(id = R.color.tippyBlue)),
+//            .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Image(
-            painter = painterResource(R.drawable.tippyblack),
-            contentDescription = null,
-        )
+        Row(modifier = Modifier.weight(3f)) {
+            Image(
+                painter = painterResource(R.drawable.tippywhite),
+                contentDescription = null,
+            )
+        }
 
-        EditNumberField(
-            value = amountInput,
-            onValueChanged = {
-                if (it.length <= maxCharsForBillAmount) {
-                    amountInput = it
+        Row(
+            modifier = Modifier
+                .weight(5f)
+                .background(
+                    colorResource(id = R.color.offWhite),
+                    shape = RoundedCornerShape(topStart = 60.dp, topEnd = 60.dp)
+                )
+                .clip(shape = RoundedCornerShape(topStart = 60.dp, topEnd = 60.dp))
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(start = 36.dp, end = 36.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+
+
+
+                EditNumberField(
+                    value = amountInput,
+                    onValueChanged = {
+                        if (it.length <= maxCharsForBillAmount) {
+                            amountInput = it
+                        }
+                    },
+                    modifier = Modifier
+                        .padding(bottom = 28.dp, start = 28.dp, end = 28.dp),
+                    label = stringResource(id = R.string.bill_amount)
+                )
+
+                // Start tip input UI
+                Text(
+                    text = "Tip: $tipPercent% | $tipValue",
+                    modifier = Modifier
+                )
+
+                Slider(value = tipPercentInput,
+                    onValueChange = { tipPercentInput = it },
+                    valueRange = 15f..30f,
+                    modifier = Modifier.padding(bottom = 28.dp, start = 28.dp, end = 28.dp),
+                    steps = 4,
+                    thumb = {
+                        Icon(
+                            imageVector = Icons.Filled.Favorite,
+                            contentDescription = null,
+                            tint = colorResource(id = R.color.tippyBlue)
+                        )
+                    }
+                )
+
+                // Start bill split UI
+                Text(
+                    text = stringResource(id = R.string.split_bill),
+                    modifier = Modifier
+                )
+                Row(modifier = Modifier.padding(start = 28.dp, end = 28.dp, bottom = 28.dp)) {
+                    ElevatedButton(
+                        onClick = {
+                            if (billSplitInput > 1) billSplitInput -= 1
+                        },
+                        contentPadding = PaddingValues(
+                            start = 12.dp,
+                            top = 12.dp,
+                            end = 12.dp,
+                            bottom = 12.dp
+                        ),
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Icon(
+                            painterResource(id = R.drawable.baseline_remove_24),
+                            contentDescription = "Remove",
+                            modifier = Modifier.size(ButtonDefaults.IconSize),
+                            tint = colorResource(id = R.color.tippyBlue)
+                        )
+                    }
+
+                    Text(
+                        "$billSplitInput",
+                        modifier = Modifier.weight(1f),
+                        textAlign = TextAlign.Center,
+                        fontSize = 28.sp
+                    )
+
+                    ElevatedButton(
+                        onClick = { billSplitInput += 1 },
+                        // Uses ButtonDefaults.ContentPadding by default
+                        contentPadding = PaddingValues(
+                            start = 12.dp,
+                            top = 12.dp,
+                            end = 12.dp,
+                            bottom = 12.dp
+                        ),
+                        modifier = Modifier.weight(1f),
+                    ) {
+                        Icon(
+                            Icons.Filled.Add,
+                            contentDescription = "Add",
+                            modifier = Modifier.size(ButtonDefaults.IconSize),
+                            tint = colorResource(id = R.color.tippyBlue)
+                        )
+                    }
                 }
-            },
-            modifier = Modifier
-                .padding(bottom = 28.dp, start = 28.dp, end = 28.dp),
-            label = stringResource(id = R.string.bill_amount)
-        )
 
-        // Start tip input UI
-        Text(
-            text = "Tip: $tipPercent% | $tipValue",
-            modifier = Modifier
-        )
+                Spacer(modifier = Modifier.padding(16.dp))
 
-        Slider(value = tipPercentInput,
-            onValueChange = { tipPercentInput = it },
-            valueRange = 15f..30f,
-            modifier = Modifier.padding(bottom = 28.dp, start = 28.dp, end = 28.dp),
-            steps = 4,
-            thumb = {
-                Icon(
-                    imageVector = Icons.Filled.Favorite,
-                    contentDescription = null,
-                    tint = colorResource(id = R.color.tippyBlue)
+
+                CalculatedValueText(
+                    R.string.total_amount,
+                    total
                 )
-            }
-        )
 
-        // Start bill split UI
-        Text(
-            text = stringResource(id = R.string.split_bill),
-            modifier = Modifier
-        )
-        Row(modifier = Modifier.padding(start = 28.dp, end = 28.dp, bottom = 28.dp)) {
-            ElevatedButton(
-                onClick = {
-                    if (billSplitInput > 1) billSplitInput -= 1
-                },
-                contentPadding = PaddingValues(
-                    start = 12.dp,
-                    top = 12.dp,
-                    end = 12.dp,
-                    bottom = 12.dp
-                ),
-                modifier = Modifier.weight(1f)
-            ) {
-                Icon(
-                    painterResource(id = R.drawable.baseline_remove_24),
-                    contentDescription = "Remove",
-                    modifier = Modifier.size(ButtonDefaults.IconSize),
-                    tint = colorResource(id = R.color.tippyBlue)
-                )
-            }
-
-            Text(
-                "$billSplitInput",
-                modifier = Modifier.weight(1f),
-                textAlign = TextAlign.Center,
-                fontSize = 28.sp
-            )
-
-            ElevatedButton(
-                onClick = { billSplitInput += 1 },
-                // Uses ButtonDefaults.ContentPadding by default
-                contentPadding = PaddingValues(
-                    start = 12.dp,
-                    top = 12.dp,
-                    end = 12.dp,
-                    bottom = 12.dp
-                ),
-                modifier = Modifier.weight(1f),
-            ) {
-                Icon(
-                    Icons.Filled.Add,
-                    contentDescription = "Add",
-                    modifier = Modifier.size(ButtonDefaults.IconSize),
-                    tint = colorResource(id = R.color.tippyBlue)
-                )
+                if (billSplitInput > 1) {
+                    CalculatedValueText(
+                        R.string.cost_per_person,
+                        costPerPerson
+                    )
+                } else {
+                    // The specific sizing of 21.75 dp causing the least amount of UI movement when
+                    // swapping to the Text composable
+                    Spacer(modifier = Modifier.padding(21.75.dp))
+                }
             }
         }
 
-        CalculatedValueText(
-            R.string.total_amount,
-            total
-        )
-
-        if (billSplitInput > 1) {
-            CalculatedValueText(
-                R.string.cost_per_person,
-                costPerPerson
-            )
-        }
-
-//        Spacer(
-//            modifier = Modifier.padding(28.dp),
-//        )
-
+//        Row(
+//            modifier = Modifier
+//                .weight(1f)
+//                .background(colorResource(id = R.color.offWhite))
+//        ) {
+//            Column(
+//                modifier = Modifier.fillMaxWidth(),
+//                horizontalAlignment = Alignment.CenterHorizontally,
+//                verticalArrangement = Arrangement.Center
+//            ) {
+//                CalculatedValueText(
+//                    R.string.total_amount,
+//                    total
+//                )
+//
+//                if (billSplitInput > 1) {
+//                    CalculatedValueText(
+//                        R.string.cost_per_person,
+//                        costPerPerson
+//                    )
+//                }
+//            }
+//        }
     }
 }
 
@@ -246,7 +300,7 @@ fun CalculatedValueText(
 ) {
     Text(
         text = stringResource(stringId, value),
-        fontSize = 28.sp,
+        fontSize = 32.sp,
         fontFamily = FontFamily(Font(R.font.roboto_black)),
         softWrap = false,
         overflow = TextOverflow.Ellipsis,
