@@ -101,6 +101,9 @@ fun TippyApp() {
     val tipValue = calculateTip(amount, tipPercent)
     val costPerPerson = calculateBillSplit(amount, tipPercent, numberOfPeople)
 
+    // Spacing constants
+    val componentSpacing = 20.dp
+
     // start page UI
     Column(
         modifier = Modifier
@@ -143,42 +146,46 @@ fun TippyApp() {
                         }
                     },
                     modifier = Modifier
-                        .padding(bottom = 28.dp, start = 28.dp, end = 28.dp),
+                        .padding(start = 28.dp, end = 28.dp),
                     label = stringResource(id = R.string.bill_amount)
                 )
 
+                Spacer(modifier = Modifier.padding(componentSpacing))
+
                 // Start tip input UI *************************************************************
                 Text(
-                    text = "Tip: $tipPercent% | $tipValue",
-                    modifier = Modifier
+                    text = "Tip: $tipPercent% | $tipValue"
                 )
 
                 Slider(value = tipPercentInput,
                     onValueChange = { tipPercentInput = it },
                     valueRange = 15f..30f,
-                    modifier = Modifier.padding(bottom = 28.dp, start = 28.dp, end = 28.dp),
+                    modifier = Modifier.padding(start = 28.dp, end = 28.dp),
                     steps = 4,
                     thumb = {
                         Icon(
                             imageVector = Icons.Filled.Favorite,
-                            contentDescription = null,
+                            contentDescription = "Heart Icon",
                             tint = colorResource(id = R.color.tippyBlue)
                         )
                     }
                 )
 
+                Spacer(modifier = Modifier.padding(componentSpacing))
+
                 // Start bill split UI ************************************************************
                 Text(
-                    text = stringResource(id = R.string.split_bill),
-                    modifier = Modifier
+                    text = stringResource(id = R.string.split_bill)
                 )
-                Row(modifier = Modifier.padding(start = 28.dp, end = 28.dp, bottom = 28.dp)) {
+
+                Row(modifier = Modifier.padding(start = 28.dp, end = 28.dp)) {
                     IncrementButton(
                         onClick = {
                             if (billSplitInput > 1) billSplitInput -= 1
                         },
                         modifier = Modifier.weight(1f),
-                        iconPainter = painterResource(id = R.drawable.baseline_remove_24)
+                        iconPainter = painterResource(id = R.drawable.baseline_remove_24),
+                        contentDescription = "Minus Button"
                     )
 
                     Text(
@@ -191,9 +198,12 @@ fun TippyApp() {
                     IncrementButton(
                         onClick = { billSplitInput += 1 },
                         modifier = Modifier.weight(1f),
-                        iconPainter = painterResource(id = R.drawable.baseline_add_24)
+                        iconPainter = painterResource(id = R.drawable.baseline_add_24),
+                        contentDescription = "Add Button"
                     )
                 }
+
+                Spacer(modifier = Modifier.padding(componentSpacing))
 
                 // Start "bill total" UI **********************************************************
                 CalculatedValueText(
@@ -217,7 +227,12 @@ fun TippyApp() {
 }
 
 @Composable
-fun IncrementButton(onClick: () -> Unit, modifier: Modifier, iconPainter: Painter) {
+fun IncrementButton(
+    onClick: () -> Unit,
+    modifier: Modifier,
+    iconPainter: Painter,
+    contentDescription: String
+) {
     ElevatedButton(
         onClick = onClick,
         contentPadding = PaddingValues(
@@ -230,7 +245,7 @@ fun IncrementButton(onClick: () -> Unit, modifier: Modifier, iconPainter: Painte
     ) {
         Icon(
             iconPainter,
-            contentDescription = "Remove",
+            contentDescription = contentDescription,
             modifier = Modifier.size(ButtonDefaults.IconSize),
             tint = colorResource(id = R.color.tippyBlue)
         )
@@ -252,8 +267,7 @@ fun EditNumberField(
         onValueChange = onValueChanged,
         label = {
             Text(
-                label,
-                textAlign = TextAlign.Center,
+                label
             )
         },
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
