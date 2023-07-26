@@ -73,7 +73,7 @@ class MainActivity : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TippyApp() {
-    // stores unformatted user input values
+    // stores string user input values
     var amountInput by remember {
         mutableStateOf("")
     }
@@ -87,7 +87,7 @@ fun TippyApp() {
     // Char limits for text inputs
     val maxCharsForBillAmount = 7
 
-    // stores formatted user input values
+    // stores casted numeric user input values
     val amount = amountInput.toDoubleOrNull() ?: 0.0
     val tipPercent = tipPercentInput.roundToInt()
     val numberOfPeople = billSplitInput.toDouble()
@@ -195,30 +195,10 @@ fun TippyApp() {
             }
         }
 
-//        EditNumberField(
-//            value = billSplitInput,
-//            onValueChanged = {
-//                if (it.length <= maxCharsForTipPercent) {
-//                    billSplitInput = it
-//                }
-//            },
-//            modifier = Modifier
-//                .padding(bottom = 12.dp, start = 28.dp, end = 28.dp),
-//            label = stringResource(id = R.string.split_bill)
-//        )
-
         CalculatedValueText(
             R.string.total_amount,
             total
         )
-
-//        CalculatedValueText(
-//            R.string.total_amount,
-//            total,
-//            Modifier
-//
-//                .padding(start = 28.dp)
-//        )
 
         if (billSplitInput > 1) {
             CalculatedValueText(
