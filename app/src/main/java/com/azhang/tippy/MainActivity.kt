@@ -126,9 +126,9 @@ fun TippyApp() {
                 .weight(5f)
                 .background(
                     colorResource(id = R.color.offWhite),
-                    shape = RoundedCornerShape(topStart = 60.dp, topEnd = 60.dp)
+                    shape = RoundedCornerShape(topStart = 52.dp, topEnd = 52.dp)
                 )
-                .clip(shape = RoundedCornerShape(topStart = 60.dp, topEnd = 60.dp))
+                .clip(shape = RoundedCornerShape(topStart = 52.dp, topEnd = 52.dp))
         ) {
             Column(
                 modifier = Modifier
