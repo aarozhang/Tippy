@@ -268,10 +268,11 @@ fun EditNumberField(
         onValueChange = onValueChanged,
         label = {
             Text(
-                label
+                label,
             )
         },
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+        shape = RoundedCornerShape(16.dp)
     )
 }
 
