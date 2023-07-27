@@ -116,7 +116,7 @@ fun TippyApp() {
         Row(modifier = Modifier.weight(3f)) {
             Image(
                 painter = painterResource(R.drawable.tippywhite),
-                contentDescription = null,
+                contentDescription = "Tippy Logo",
             )
         }
 
@@ -154,7 +154,8 @@ fun TippyApp() {
 
                 // Start tip input UI *************************************************************
                 Text(
-                    text = "Tip: $tipPercent% | $tipValue"
+                    text = "Tip: $tipPercent% | $tipValue",
+                    fontSize = 20.sp
                 )
 
                 Slider(value = tipPercentInput,
