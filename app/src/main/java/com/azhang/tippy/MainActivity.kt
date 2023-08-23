@@ -162,7 +162,7 @@ fun TippyApp() {
                     onValueChange = { tipPercentInput = it },
                     valueRange = 15f..30f,
                     modifier = Modifier.padding(start = 28.dp, end = 28.dp),
-                    steps = 4,
+                    steps = 15,
                     thumb = {
                         Icon(
                             imageVector = Icons.Filled.Favorite,
