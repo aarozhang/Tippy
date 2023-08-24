@@ -125,7 +125,7 @@ fun TippyApp() {
             modifier = Modifier
                 .weight(5f)
                 .background(
-                    colorResource(id = R.color.offWhite),
+                    colorResource(id = R.color.backgroundColor),
                     shape = RoundedCornerShape(topStart = 52.dp, topEnd = 52.dp)
                 )
                 .clip(shape = RoundedCornerShape(topStart = 52.dp, topEnd = 52.dp))
@@ -137,18 +137,51 @@ fun TippyApp() {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
+
                 // Start "Bill Amount Input" UI ***************************************************
-                EditNumberField(
-                    value = amountInput,
-                    onValueChanged = {
-                        if (it.length <= maxCharsForBillAmount) {
-                            amountInput = it
-                        }
-                    },
-                    modifier = Modifier
-                        .padding(start = 28.dp, end = 28.dp),
-                    label = stringResource(id = R.string.bill_amount)
-                )
+                Row(modifier = Modifier.padding(start = 28.dp, end = 28.dp)) {
+                    EditNumberField(
+                        value = amountInput,
+                        onValueChanged = {
+                            if (it.length <= maxCharsForBillAmount) {
+                                amountInput = it
+                            }
+                        },
+                        modifier = Modifier
+                            .weight(4f)
+                            .padding(end = 4.dp),
+                        label = stringResource(id = R.string.bill_amount)
+                    )
+
+                    // Start reset button
+                    ElevatedButton(
+                        onClick = {
+                            amountInput = ""
+                            tipPercentInput = 15f
+                            billSplitInput = 1
+                        },
+                        contentPadding = PaddingValues(
+                            start = 12.dp,
+                            top = 12.dp,
+                            end = 12.dp,
+                            bottom = 12.dp
+                        ),
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(start = 8.dp, top = 12.dp, bottom = 12.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = colorResource(id = R.color.buttonColor)
+                        )
+
+                    ) {
+                        Icon(
+                            painterResource(id = R.drawable.baseline_delete_24),
+                            contentDescription = "Reset Icon",
+                            modifier = Modifier.size(ButtonDefaults.IconSize),
+                            tint = colorResource(id = R.color.black)
+                        )
+                    }
+                }
 
                 Spacer(modifier = Modifier.padding(componentSpacing))
 
@@ -180,6 +213,7 @@ fun TippyApp() {
                 )
 
                 Row(modifier = Modifier.padding(start = 28.dp, end = 28.dp)) {
+                    Spacer(modifier = Modifier.weight(1f))
                     IncrementButton(
                         onClick = {
                             if (billSplitInput > 1) billSplitInput -= 1
@@ -191,7 +225,7 @@ fun TippyApp() {
 
                     Text(
                         "$billSplitInput",
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier.weight(2f),
                         textAlign = TextAlign.Center,
                         fontSize = 28.sp
                     )
@@ -202,6 +236,7 @@ fun TippyApp() {
                         iconPainter = painterResource(id = R.drawable.baseline_add_24),
                         contentDescription = "Add Button"
                     )
+                    Spacer(modifier = Modifier.weight(1f))
                 }
 
                 Spacer(modifier = Modifier.padding(componentSpacing))
@@ -242,13 +277,16 @@ fun IncrementButton(
             end = 12.dp,
             bottom = 12.dp
         ),
-        modifier = modifier
+        modifier = modifier,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = colorResource(id = R.color.buttonColor)
+        )
     ) {
         Icon(
             iconPainter,
             contentDescription = contentDescription,
             modifier = Modifier.size(ButtonDefaults.IconSize),
-            tint = colorResource(id = R.color.tippyBlue)
+            tint = colorResource(id = R.color.black)
         )
     }
 }
