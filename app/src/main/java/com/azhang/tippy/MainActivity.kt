@@ -1,10 +1,10 @@
 package com.azhang.tippy
 
 import android.os.Bundle
+import android.widget.Space
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -87,6 +87,9 @@ fun TippyApp() {
     var billSplitInput by remember {
         mutableStateOf(1)
     }
+    var taxAmountInput by remember {
+        mutableStateOf("")
+    }
 
     // Char limits for text inputs
     val maxCharsForBillAmount = 7
@@ -95,11 +98,12 @@ fun TippyApp() {
     val amount = amountInput.toDoubleOrNull() ?: 0.0
     val tipPercent = tipPercentInput.roundToInt()
     val numberOfPeople = billSplitInput.toDouble()
+    val taxAmount = taxAmountInput.toDoubleOrNull() ?: 0.0
 
     // stores calculated values
-    val total = calculateTotal(amount, tipPercent)
+    val total = calculateTotal(amount, tipPercent, taxAmount)
     val tipValue = calculateTip(amount, tipPercent)
-    val costPerPerson = calculateBillSplit(amount, tipPercent, numberOfPeople)
+    val costPerPerson = calculateBillSplit(amount, tipPercent, numberOfPeople, taxAmount)
 
     // Spacing constants
     val componentSpacing = 20.dp
@@ -112,18 +116,34 @@ fun TippyApp() {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        // Start logo *****************************************************************************
-        Row(modifier = Modifier.weight(3f)) {
-            Image(
-                painter = painterResource(R.drawable.tippywhite),
-                contentDescription = "Tippy Logo",
-            )
+        // Start amount total UI ******************************************************************
+        Row(modifier = Modifier.weight(1f)) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(start = 36.dp, end = 36.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                CalculatedValueText(
+                    R.string.total_amount,
+                    total
+                )
+
+                if (billSplitInput > 1) {
+                    CalculatedValueText(
+                        R.string.cost_per_person,
+                        costPerPerson
+                    )
+                    Spacer(modifier = Modifier.padding(8.dp))
+                }
+            }
         }
 
         // Start body content *********************************************************************
         Row(
             modifier = Modifier
-                .weight(5f)
+                .weight(4f)
                 .background(
                     colorResource(id = R.color.white),
                     shape = RoundedCornerShape(topStart = 52.dp, topEnd = 52.dp)
@@ -137,6 +157,37 @@ fun TippyApp() {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
+                // Start Reset Button
+                Row(modifier = Modifier.padding(start = 28.dp, end = 28.dp)) {
+                    ElevatedButton(
+                        onClick = {
+                            amountInput = ""
+                            tipPercentInput = 15f
+                            billSplitInput = 1
+                            taxAmountInput = ""
+                        },
+                        contentPadding = PaddingValues(
+                            start = 12.dp,
+                            top = 12.dp,
+                            end = 12.dp,
+                            bottom = 12.dp
+                        ),
+                        modifier = Modifier,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = colorResource(id = R.color.buttonColor)
+                        )
+
+                    ) {
+                        Icon(
+                            painterResource(id = R.drawable.baseline_restart_alt_24),
+                            contentDescription = "Reset Icon",
+                            modifier = Modifier.size(ButtonDefaults.IconSize),
+                            tint = colorResource(id = R.color.black)
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.padding(20.dp))
 
                 // Start "Bill Amount Input" UI ***************************************************
                 Row(modifier = Modifier.padding(start = 28.dp, end = 28.dp)) {
@@ -147,40 +198,9 @@ fun TippyApp() {
                                 amountInput = it
                             }
                         },
-                        modifier = Modifier
-                            .weight(4f)
-                            .padding(end = 4.dp),
+                        modifier = Modifier.padding(start = 20.dp, end = 20.dp),
                         label = stringResource(id = R.string.bill_amount)
                     )
-
-                    // Start reset button
-                    ElevatedButton(
-                        onClick = {
-                            amountInput = ""
-                            tipPercentInput = 15f
-                            billSplitInput = 1
-                        },
-                        contentPadding = PaddingValues(
-                            start = 12.dp,
-                            top = 12.dp,
-                            end = 12.dp,
-                            bottom = 12.dp
-                        ),
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(start = 8.dp, top = 12.dp, bottom = 12.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = colorResource(id = R.color.buttonColor)
-                        )
-
-                    ) {
-                        Icon(
-                            painterResource(id = R.drawable.baseline_delete_24),
-                            contentDescription = "Reset Icon",
-                            modifier = Modifier.size(ButtonDefaults.IconSize),
-                            tint = colorResource(id = R.color.black)
-                        )
-                    }
                 }
 
                 Spacer(modifier = Modifier.padding(componentSpacing))
@@ -204,6 +224,21 @@ fun TippyApp() {
                         )
                     }
                 )
+
+                Spacer(modifier = Modifier.padding(16.dp))
+
+                Row(modifier = Modifier.padding(start = 28.dp, end = 28.dp)) {
+                    EditNumberField(
+                        value = taxAmountInput,
+                        onValueChanged = {
+                            if (it.length <= maxCharsForBillAmount) {
+                                taxAmountInput = it
+                            }
+                        },
+                        modifier = Modifier.padding(start = 20.dp, end = 20.dp),
+                        label = stringResource(id = R.string.tax_amount)
+                    )
+                }
 
                 Spacer(modifier = Modifier.padding(componentSpacing))
 
@@ -239,24 +274,7 @@ fun TippyApp() {
                     Spacer(modifier = Modifier.weight(1f))
                 }
 
-                Spacer(modifier = Modifier.padding(componentSpacing))
-
-                // Start "bill total" UI **********************************************************
-                CalculatedValueText(
-                    R.string.total_amount,
-                    total
-                )
-
-                if (billSplitInput > 1) {
-                    CalculatedValueText(
-                        R.string.cost_per_person,
-                        costPerPerson
-                    )
-                } else {
-                    // The specific sizing of 21.75 dp matches the Text composable the best.
-                    // Helps avoid UI shifting.
-                    Spacer(modifier = Modifier.padding(21.75.dp))
-                }
+                Spacer(modifier = Modifier.padding(36.dp))
             }
         }
     }
@@ -342,8 +360,8 @@ private fun calculateTip(billAmount: Double, tipPercent: Int = 15): String {
  * Calculates the bill total.
  * Accounts for local currency.
  */
-private fun calculateTotal(billAmount: Double, tipPercent: Int = 15): String {
-    val total = tipPercent.toDouble() / 100 * billAmount + billAmount
+private fun calculateTotal(billAmount: Double, tipPercent: Int = 15, taxAmount: Double): String {
+    val total = tipPercent.toDouble() / 100 * billAmount + billAmount + taxAmount
     return NumberFormat.getCurrencyInstance().format(total)
 }
 
@@ -354,9 +372,11 @@ private fun calculateTotal(billAmount: Double, tipPercent: Int = 15): String {
 private fun calculateBillSplit(
     billAmount: Double,
     tipPercent: Int = 15,
-    numberOfPeople: Double = 1.0
+    numberOfPeople: Double = 1.0,
+    taxAmount: Double
 ): String {
-    val costPerPerson = (tipPercent.toDouble() / 100 * billAmount + billAmount) / numberOfPeople
+    val costPerPerson =
+        (tipPercent.toDouble() / 100 * billAmount + billAmount + taxAmount) / numberOfPeople
     return NumberFormat.getCurrencyInstance().format(costPerPerson)
 }
 

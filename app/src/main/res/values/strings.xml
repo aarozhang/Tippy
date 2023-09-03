@@ -5,4 +5,5 @@
     <string name="total_amount">%s</string>
     <string name="split_bill">Split Bill</string>
     <string name="cost_per_person">Split: %s</string>
+    <string name="tax_amount">Tax Amount (optional)</string>
 </resources>
