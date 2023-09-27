@@ -101,9 +101,11 @@ fun TippyApp() {
     val taxAmount = taxAmountInput.toDoubleOrNull() ?: 0.0
 
     // stores calculated values
-    val total = calculateTotal(amount, tipPercent, taxAmount)
-    val tipValue = calculateTip(amount, tipPercent)
-    val costPerPerson = calculateBillSplit(amount, tipPercent, numberOfPeople, taxAmount)
+    val total =
+        NumberFormat.getCurrencyInstance().format(calculateTotal(amount, tipPercent, taxAmount))
+    val tipValue = NumberFormat.getCurrencyInstance().format(calculateTip(amount, tipPercent))
+    val costPerPerson = NumberFormat.getCurrencyInstance()
+        .format(calculateBillSplit(amount, tipPercent, numberOfPeople, taxAmount))
 
     // start page UI
     Column(
@@ -362,33 +364,31 @@ fun CalculatedValueText(
  * Calculates the tip value.
  * Accounts for local currency.
  */
-private fun calculateTip(billAmount: Double, tipPercent: Int = 15): String {
-    val tip = tipPercent.toDouble() / 100 * billAmount
-    return NumberFormat.getCurrencyInstance().format(tip)
+internal fun calculateTip(billAmount: Double, tipPercent: Int = 15): Double {
+    return tipPercent.toDouble() / 100 * billAmount
 }
 
 /**
  * Calculates the bill total.
  * Accounts for local currency.
  */
-private fun calculateTotal(billAmount: Double, tipPercent: Int = 15, taxAmount: Double): String {
-    val total = tipPercent.toDouble() / 100 * billAmount + billAmount + taxAmount
-    return NumberFormat.getCurrencyInstance().format(total)
+internal fun calculateTotal(billAmount: Double, tipPercent: Int = 15, taxAmount: Double): Double {
+    val calculatedTip = calculateTip(billAmount, tipPercent)
+    return calculatedTip + billAmount + taxAmount
 }
 
 /**
  * Splits the bill.
  * Accounts for local currency.
  */
-private fun calculateBillSplit(
+internal fun calculateBillSplit(
     billAmount: Double,
     tipPercent: Int = 15,
     numberOfPeople: Double = 1.0,
     taxAmount: Double
-): String {
-    val costPerPerson =
-        (tipPercent.toDouble() / 100 * billAmount + billAmount + taxAmount) / numberOfPeople
-    return NumberFormat.getCurrencyInstance().format(costPerPerson)
+): Double {
+    val calculatedTotal = calculateTotal(billAmount, tipPercent, taxAmount)
+    return calculatedTotal / numberOfPeople
 }
 
 @Preview(showBackground = true)
