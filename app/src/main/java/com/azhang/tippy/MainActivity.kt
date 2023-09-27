@@ -1,7 +1,6 @@
 package com.azhang.tippy
 
 import android.os.Bundle
-import android.widget.Space
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -27,6 +26,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -104,9 +104,6 @@ fun TippyApp() {
     val total = calculateTotal(amount, tipPercent, taxAmount)
     val tipValue = calculateTip(amount, tipPercent)
     val costPerPerson = calculateBillSplit(amount, tipPercent, numberOfPeople, taxAmount)
-
-    // Spacing constants
-    val componentSpacing = 20.dp
 
     // start page UI
     Column(
@@ -203,12 +200,13 @@ fun TippyApp() {
                     )
                 }
 
-                Spacer(modifier = Modifier.padding(componentSpacing))
+                Spacer(modifier = Modifier.padding(20.dp))
 
                 // Start tip input UI *************************************************************
                 Text(
                     text = "Tip: $tipPercent% | $tipValue",
-                    fontSize = 20.sp
+                    fontSize = 20.sp,
+                    color = colorResource(id = R.color.black),
                 )
 
                 Slider(value = tipPercentInput,
@@ -240,11 +238,12 @@ fun TippyApp() {
                     )
                 }
 
-                Spacer(modifier = Modifier.padding(componentSpacing))
+                Spacer(modifier = Modifier.padding(20.dp))
 
                 // Start bill split UI ************************************************************
                 Text(
-                    text = stringResource(id = R.string.split_bill)
+                    text = stringResource(id = R.string.split_bill),
+                    color = colorResource(id = R.color.black),
                 )
 
                 Row(modifier = Modifier.padding(start = 28.dp, end = 28.dp)) {
@@ -262,7 +261,8 @@ fun TippyApp() {
                         "$billSplitInput",
                         modifier = Modifier.weight(2f),
                         textAlign = TextAlign.Center,
-                        fontSize = 28.sp
+                        fontSize = 28.sp,
+                        color = colorResource(id = R.color.black),
                     )
 
                     IncrementButton(
@@ -328,7 +328,17 @@ fun EditNumberField(
             )
         },
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-        shape = RoundedCornerShape(16.dp)
+        shape = RoundedCornerShape(16.dp),
+        colors = TextFieldDefaults.textFieldColors(
+            textColor = colorResource(id = R.color.black),
+            containerColor = colorResource(
+                id = R.color.white
+            ),
+            unfocusedLabelColor = colorResource(id = R.color.black),
+            unfocusedIndicatorColor = colorResource(
+                id = R.color.black
+            )
+        )
     )
 }
 
@@ -339,7 +349,8 @@ fun CalculatedValueText(
 ) {
     Text(
         text = stringResource(stringId, value),
-        fontSize = 32.sp,
+        color = colorResource(id = R.color.black),
+        fontSize = 40.sp,
         fontFamily = FontFamily(Font(R.font.roboto_black)),
         softWrap = false,
         overflow = TextOverflow.Ellipsis,
