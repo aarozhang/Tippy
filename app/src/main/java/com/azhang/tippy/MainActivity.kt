@@ -89,7 +89,7 @@ fun TippyApp() {
     }
 
     // Char limits for text inputs
-    val maxCharsForBillAmount = 7
+    val maxCharsForBillAmount = 9
 
     // stores casted numeric user input values
     val amount = amountInput.toDoubleOrNull() ?: 0.0
@@ -334,9 +334,10 @@ fun CalculatedValueText(
         color = colorResource(id = R.color.black),
         fontSize = 40.sp,
         fontFamily = FontFamily(Font(R.font.roboto_black)),
-        softWrap = false,
-        overflow = TextOverflow.Ellipsis,
-        textAlign = TextAlign.Center
+        softWrap = true,
+        overflow = TextOverflow.Visible,
+        textAlign = TextAlign.Center,
+        lineHeight = 40.sp
     )
 }
 
