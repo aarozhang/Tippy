@@ -87,9 +87,6 @@ fun TippyApp() {
     var billSplitInput by remember {
         mutableStateOf(1)
     }
-    var taxAmountInput by remember {
-        mutableStateOf("")
-    }
 
     // Char limits for text inputs
     val maxCharsForBillAmount = 7
@@ -98,14 +95,13 @@ fun TippyApp() {
     val amount = amountInput.toDoubleOrNull() ?: 0.0
     val tipPercent = tipPercentInput.roundToInt()
     val numberOfPeople = billSplitInput.toDouble()
-    val taxAmount = taxAmountInput.toDoubleOrNull() ?: 0.0
 
     // stores calculated values
     val total =
-        NumberFormat.getCurrencyInstance().format(calculateTotal(amount, tipPercent, taxAmount))
+        NumberFormat.getCurrencyInstance().format(calculateTotal(amount, tipPercent))
     val tipValue = NumberFormat.getCurrencyInstance().format(calculateTip(amount, tipPercent))
     val costPerPerson = NumberFormat.getCurrencyInstance()
-        .format(calculateBillSplit(amount, tipPercent, numberOfPeople, taxAmount))
+        .format(calculateBillSplit(amount, tipPercent, numberOfPeople))
 
     // start page UI
     Column(
@@ -116,7 +112,7 @@ fun TippyApp() {
         verticalArrangement = Arrangement.Center
     ) {
         // Start amount total UI ******************************************************************
-        Row(modifier = Modifier.weight(1f)) {
+        Row(modifier = Modifier.weight(2f)) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -142,7 +138,7 @@ fun TippyApp() {
         // Start body content *********************************************************************
         Row(
             modifier = Modifier
-                .weight(4f)
+                .weight(3f)
                 .background(
                     colorResource(id = R.color.white),
                     shape = RoundedCornerShape(topStart = 52.dp, topEnd = 52.dp)
@@ -163,7 +159,6 @@ fun TippyApp() {
                             amountInput = ""
                             tipPercentInput = 15f
                             billSplitInput = 1
-                            taxAmountInput = ""
                         },
                         contentPadding = PaddingValues(
                             start = 12.dp,
@@ -189,7 +184,7 @@ fun TippyApp() {
                 Spacer(modifier = Modifier.padding(20.dp))
 
                 // Start "Bill Amount Input" UI ***************************************************
-                Row(modifier = Modifier.padding(start = 28.dp, end = 28.dp)) {
+                Row(modifier = Modifier.padding(start = 20.dp, end = 20.dp)) {
                     EditNumberField(
                         value = amountInput,
                         onValueChanged = {
@@ -226,21 +221,6 @@ fun TippyApp() {
                 )
 
                 Spacer(modifier = Modifier.padding(16.dp))
-
-                Row(modifier = Modifier.padding(start = 28.dp, end = 28.dp)) {
-                    EditNumberField(
-                        value = taxAmountInput,
-                        onValueChanged = {
-                            if (it.length <= maxCharsForBillAmount) {
-                                taxAmountInput = it
-                            }
-                        },
-                        modifier = Modifier.padding(start = 20.dp, end = 20.dp),
-                        label = stringResource(id = R.string.tax_amount)
-                    )
-                }
-
-                Spacer(modifier = Modifier.padding(20.dp))
 
                 // Start bill split UI ************************************************************
                 Text(
@@ -372,9 +352,9 @@ internal fun calculateTip(billAmount: Double, tipPercent: Int = 15): Double {
  * Calculates the bill total.
  * Accounts for local currency.
  */
-internal fun calculateTotal(billAmount: Double, tipPercent: Int = 15, taxAmount: Double): Double {
+internal fun calculateTotal(billAmount: Double, tipPercent: Int = 15): Double {
     val calculatedTip = calculateTip(billAmount, tipPercent)
-    return calculatedTip + billAmount + taxAmount
+    return calculatedTip + billAmount
 }
 
 /**
@@ -384,10 +364,9 @@ internal fun calculateTotal(billAmount: Double, tipPercent: Int = 15, taxAmount:
 internal fun calculateBillSplit(
     billAmount: Double,
     tipPercent: Int = 15,
-    numberOfPeople: Double = 1.0,
-    taxAmount: Double
+    numberOfPeople: Double = 1.0
 ): Double {
-    val calculatedTotal = calculateTotal(billAmount, tipPercent, taxAmount)
+    val calculatedTotal = calculateTotal(billAmount, tipPercent)
     return calculatedTotal / numberOfPeople
 }
 
