@@ -19,10 +19,9 @@ class TippyTests {
     fun calculateTotal_isCorrect() {
         val billAmount = 100.00
         val tipPercent = 15
-        val taxAmount = 10.00
-        val expected = NumberFormat.getCurrencyInstance().format(125)
+        val expected = NumberFormat.getCurrencyInstance().format(115)
         val returned = NumberFormat.getCurrencyInstance()
-            .format(calculateTotal(billAmount, tipPercent, taxAmount))
+            .format(calculateTotal(billAmount, tipPercent))
         assertEquals(expected, returned)
     }
 
@@ -30,11 +29,10 @@ class TippyTests {
     fun calculateBillSplit_isCorrect() {
         val billAmount = 100.00
         val tipPercent = 10
-        val taxAmount = 10.00
         val numberOfPeople = 2.0
-        val expected = NumberFormat.getCurrencyInstance().format(60)
+        val expected = NumberFormat.getCurrencyInstance().format(55)
         val returned = NumberFormat.getCurrencyInstance()
-            .format(calculateBillSplit(billAmount, tipPercent, numberOfPeople, taxAmount))
+            .format(calculateBillSplit(billAmount, tipPercent, numberOfPeople))
         assertEquals(expected, returned)
     }
 }
